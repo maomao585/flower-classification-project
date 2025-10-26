@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+
+# Virtual Environment
+.env
+.venv
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Data
+data/
+!data/.gitkeep
+!src/data/ 
+
+# MLflow
+mlruns/
+
+# Models
+models/
+!models/.gitkeep
+
+# OS
+.DS_Store
+
+# Testing
+.coverage
+.pytest_cache/
