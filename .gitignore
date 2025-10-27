@@ -35,3 +35,4 @@ models/
 # Testing
 .coverage
 .pytest_cache/
+/data
