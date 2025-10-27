@@ -1,9 +1,12 @@
-from fastapi.testclient import TestClient
-from app.main import app
 import io
+
+from fastapi.testclient import TestClient
 from PIL import Image
 
+from app.main import app
+
 client = TestClient(app)
+
 
 def make_image_bytes(size=(128, 128), color=(255, 0, 0)):
     img = Image.new("RGB", size, color)
@@ -12,12 +15,14 @@ def make_image_bytes(size=(128, 128), color=(255, 0, 0)):
     buf.seek(0)
     return buf
 
+
 def test_predict_valid_small_image():
     buf = make_image_bytes((16, 16))
     files = {"file": ("small.png", buf, "image/png")}
     r = client.post("/predict", files=files)
     assert r.status_code == 200
     assert "label" in r.json() and "score" in r.json()
+
 
 def test_predict_missing_file_field():
     r = client.post("/predict", files={})

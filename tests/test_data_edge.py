@@ -1,7 +1,9 @@
 import os
-import tempfile
 import shutil
+import tempfile
+
 import pytest
+
 from src.data.data_loader import FlowerDataLoader
 
 

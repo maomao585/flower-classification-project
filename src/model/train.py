@@ -26,7 +26,10 @@ def train_model(model, train_loader, test_loader, class_names):
         # provenance tags
         try:
             import subprocess
-            git_sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+
+            git_sha = (
+                subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+            )
             mlflow.set_tag("git_sha", git_sha)
         except Exception:
             mlflow.set_tag("git_sha", "unknown")
