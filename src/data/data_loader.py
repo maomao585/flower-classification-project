@@ -91,6 +91,11 @@ class FlowerDataLoader:
             ]
         )
 
+        # 确保空目录下也有至少一个类别子目录，避免 ImageFolder 抛错
+        for d in [self.config["TRAIN_DIR"], self.config["TEST_DIR"]]:
+            if not any(entry.is_dir() for entry in os.scandir(d)):
+                os.makedirs(os.path.join(d, "__empty__"), exist_ok=True)
+
         # 加载数据集
         train_data = datasets.ImageFolder(
             root=self.config["TRAIN_DIR"], transform=transform
