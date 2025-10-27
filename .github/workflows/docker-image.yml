@@ -22,6 +22,7 @@ jobs:
     - name: Build Docker image
       run: docker build -t flower-classification:latest .
     - name: Configure MLflow to DagsHub
+      if: ${{ secrets.DAGSHUB_USERNAME != '' && secrets.DAGSHUB_TOKEN != '' }}
       env:
         DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
