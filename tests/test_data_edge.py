@@ -34,7 +34,8 @@ def test_get_data_loaders_on_empty_dirs(monkeypatch):
         os.makedirs(os.environ["TEST_DIR"], exist_ok=True)
 
         dl = FlowerDataLoader()
-        # Empty folders will create empty datasets; accessing DataLoader len should be 0-sized datasets
+        # Empty folders will create empty datasets;
+        # accessing DataLoader len should be 0-sized datasets
         train_loader, test_loader, mapping = dl.get_data_loaders()
         assert hasattr(train_loader, "batch_size")
         assert isinstance(mapping, dict)

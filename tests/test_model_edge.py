@@ -14,7 +14,8 @@ def test_model_batch_size_one():
 def test_model_non_square_input():
     model = SimpleCNN(num_classes=17)
     x = torch.randn(2, 3, 128, 96)
-    # model uses pooling that should handle non-square, final flatten dims will differ and break fc layer
+    # model uses pooling that should handle non-square,
+    # final flatten dims will differ and break fc layer
     with pytest.raises(RuntimeError):
         _ = model(x)
 
