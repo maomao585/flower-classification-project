@@ -91,10 +91,20 @@ class FlowerDataLoader:
             ]
         )
 
-        # 确保空目录下也有至少一个类别子目录，避免 ImageFolder 抛错
+        # 确保空目录下也有至少一个类别子目录，并放置占位图片，避免 ImageFolder 抛错
         for d in [self.config["TRAIN_DIR"], self.config["TEST_DIR"]]:
             if not any(entry.is_dir() for entry in os.scandir(d)):
-                os.makedirs(os.path.join(d, "__empty__"), exist_ok=True)
+                cls = os.path.join(d, "__empty__")
+                os.makedirs(cls, exist_ok=True)
+                placeholder = os.path.join(cls, "placeholder.png")
+                if not os.path.exists(placeholder):
+                    try:
+                        from PIL import Image
+
+                        Image.new("RGB", (1, 1), color=(0, 0, 0)).save(placeholder)
+                    except Exception:
+                        # 如果 Pillow 不可用，仍按原逻辑继续，CI 里会安装依赖
+                        pass
 
         # 加载数据集
         train_data = datasets.ImageFolder(
