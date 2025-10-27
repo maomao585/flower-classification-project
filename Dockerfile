@@ -31,4 +31,4 @@ COPY . .
 RUN mkdir -p data mlruns models
 
 # 设置入口点
-CMD ["python", "train.py"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
