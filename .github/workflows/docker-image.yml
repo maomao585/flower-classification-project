@@ -23,8 +23,19 @@ jobs:
       run: docker build -t flower-classification:latest .
     - name: Test Docker image (healthcheck)
       run: |
+        set -e
         docker run -d --name flower-api -p 8000:8000 flower-classification:latest
-        sleep 3
+        echo "Waiting for service to be ready..."
+        for i in {1..45}; do
+          if curl -sf http://localhost:8000/health > /dev/null; then
+            echo "Service is up"; break; fi; sleep 2; done
+        if ! curl -sf http://localhost:8000/health > /dev/null; then
+          echo "Healthcheck failed after retries";
+          docker ps -a || true;
+          docker logs flower-api || true;
+          docker rm -f flower-api || true;
+          exit 56;
+        fi
         curl -f http://localhost:8000/health
         docker logs flower-api
         docker rm -f flower-api
