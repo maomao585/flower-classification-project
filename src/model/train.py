@@ -23,6 +23,17 @@ def train_model(model, train_loader, test_loader, class_names):
     mlflow.set_experiment(config["MLFLOW_EXPERIMENT_NAME"])
 
     with mlflow.start_run():
+        # provenance tags
+        try:
+            import subprocess
+
+            git_sha = (
+                subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+            )
+            mlflow.set_tag("git_sha", git_sha)
+        except Exception:
+            mlflow.set_tag("git_sha", "unknown")
+        mlflow.set_tag("dataset_version", os.getenv("DATA_VERSION", "unknown"))
         # 记录超参数
         mlflow.log_params(
             {

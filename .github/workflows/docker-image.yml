@@ -2,9 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, dev, staging ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, dev, staging ]
   workflow_dispatch:
 
 jobs:
@@ -13,8 +13,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Create env file for staging
+      if: github.ref == 'refs/heads/staging'
+      run: echo "${{ secrets.STAGING_ENV }}" > .env
+    - name: Create env file for production
+      if: github.ref == 'refs/heads/main'
+      run: echo "${{ secrets.PROD_ENV }}" > .env
     - name: Build Docker image
       run: docker build -t flower-classification:latest .
-    - name: Test Docker image
+    - name: Test Docker image (healthcheck)
       run: |
-        docker run --rm flower-classification:latest python -c "import src; print('Import test passed')"
+        set -e
+        docker run -d --name flower-api -p 8000:8000 flower-classification:latest
+        echo "Waiting for service to be ready..."
+        for i in {1..45}; do
+          if curl -sf http://localhost:8000/health > /dev/null; then
+            echo "Service is up"; break; fi; sleep 2; done
+        if ! curl -sf http://localhost:8000/health > /dev/null; then
+          echo "Healthcheck failed after retries";
+          docker ps -a || true;
+          docker logs flower-api || true;
+          docker rm -f flower-api || true;
+          exit 56;
+        fi
+        curl -f http://localhost:8000/health
+        docker logs flower-api
+        docker rm -f flower-api

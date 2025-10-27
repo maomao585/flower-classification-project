@@ -18,3 +18,8 @@ build
 .github
 mlruns/*
 !mlruns/.gitkeep
+# Exclude data and large model artifacts from image
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
