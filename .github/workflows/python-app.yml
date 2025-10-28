@@ -45,3 +45,17 @@ jobs:
       run: echo "PYTHONPATH=$GITHUB_WORKSPACE/src:$GITHUB_WORKSPACE" >> $GITHUB_ENV
     - name: Run tests
       run: python -m pytest tests/ -v
+    - name: Install DVC
+      run: pip install "dvc[azure]"
+    - name: DVC push to DagsHub
+      run: |
+        if [ -n "${{ secrets.DAGSHUB_USERNAME }}" ] && [ -n "${{ secrets.DAGSHUB_TOKEN }}" ]; then
+          dvc remote add origin https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/flower-classification-project.dvc || true
+          dvc remote default origin || true
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user "${{ secrets.DAGSHUB_USERNAME }}"
+          dvc remote modify origin --local password "${{ secrets.DAGSHUB_TOKEN }}"
+          dvc push || echo "No DVC-tracked files to push"
+        else
+          echo "DagsHub secrets not set, skipping dvc push"
+        fi
